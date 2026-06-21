@@ -1,0 +1,707 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;600;700&display=swap');
+
+/* ============================================================
+   AMONG US TASK SIMULATOR — STYLESHEET
+   ============================================================ */
+
+:root {
+  --teal:     #00d4aa;
+  --teal-dim: #009977;
+  --bg:       #0a0a12;
+  --panel:    #111122;
+  --red:      #ff3b3b;
+  --yellow:   #ffe066;
+  --white:    #e8eaf6;
+  --glow:     0 0 18px #00d4aa99, 0 0 40px #00d4aa33;
+  --btn-glow: 0 0 12px #00d4aa88;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.pixel { font-family: 'Press Start 2P', monospace; }
+
+/* SCREENS */
+.screen {
+  display: none;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.screen.active { display: flex; }
+
+/* ============================================================
+   SETUP SCREEN
+   ============================================================ */
+#setup-screen {
+  background: radial-gradient(ellipse at 50% 70%, #0a1a1a 0%, #050510 80%);
+}
+.setup-bg-wrap {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden; pointer-events: none;
+}
+#setup-bg-canvas { width: 100%; height: 100%; opacity: 0.07; }
+
+.setup-card {
+  background: var(--panel);
+  border: 2px solid var(--teal-dim);
+  border-radius: 16px;
+  padding: 36px 40px;
+  width: 90%;
+  max-width: 560px;
+  box-shadow: 0 0 40px #00d4aa22;
+  z-index: 10;
+}
+
+#setup-screen h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.2rem, 4vw, 2.2rem);
+  color: var(--teal);
+  text-shadow: var(--glow);
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+.subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: #aaa;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.form-group { margin-bottom: 28px; }
+.form-group label {
+  display: block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  color: var(--teal);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.form-group input[type="text"] {
+  width: 100%;
+  background: #0a0a1a;
+  border: 2px solid #333355;
+  border-radius: 8px;
+  color: var(--white);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input[type="text"]:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 8px #00d4aa44;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.color-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.color-btn:hover { transform: scale(1.15); }
+.color-btn.selected {
+  border-color: #fff;
+  box-shadow: 0 0 12px #ffffff88;
+  transform: scale(1.2);
+}
+.color-btn.selected::after {
+  content: '\2713';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+/* SHARED BUTTON */
+.btn-main {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--teal);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: var(--btn-glow);
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  margin-top: 10px;
+}
+.btn-main:hover {
+  background: #00ffcc;
+  box-shadow: 0 0 20px #00d4aaaa;
+  transform: translateY(-2px);
+}
+.btn-main:active { transform: translateY(0); }
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+#home-screen {
+  background: radial-gradient(ellipse at 50% 60%, #071a1a 0%, #050510 70%);
+  justify-content: flex-start;
+}
+
+#floating-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.floating-mate {
+  position: absolute;
+  animation: floatAround linear infinite;
+  opacity: 0.18;
+}
+@keyframes floatAround {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  25%  { transform: translateY(-30px) rotate(5deg); }
+  50%  { transform: translateY(10px) rotate(-5deg); }
+  75%  { transform: translateY(-15px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.home-header {
+  width: 100%;
+  background: linear-gradient(180deg, #060610 0%, transparent 100%);
+  padding: 30px 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+.home-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+  color: var(--teal);
+  text-shadow: var(--glow);
+}
+.player-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border: 2px solid var(--teal-dim);
+  border-radius: 40px;
+  padding: 8px 18px 8px 10px;
+}
+.player-badge span { font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; }
+
+.home-body {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  padding: 20px 30px 40px;
+  gap: 30px;
+  z-index: 10;
+  flex: 1;
+}
+
+.task-list-panel {
+  background: var(--panel);
+  border: 2px solid #222244;
+  border-radius: 16px;
+  padding: 24px;
+  flex: 1;
+  min-width: 0;
+}
+.task-list-panel h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  color: var(--teal);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.progress-bar-wrap {
+  background: #222;
+  border-radius: 20px;
+  height: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal-dim), var(--teal));
+  border-radius: 20px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px var(--teal);
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  border: 1px solid transparent;
+  margin-bottom: 8px;
+}
+.task-item:hover:not(.done):not(.locked) {
+  background: #1e1e36;
+  border-color: #333366;
+  transform: translateX(3px);
+}
+.task-item.done   { opacity: 0.45; cursor: default; }
+.task-item.locked { opacity: 0.3;  cursor: not-allowed; }
+
+.task-icon  { font-size: 1.4rem; width: 30px; text-align: center; flex-shrink: 0; }
+.task-info  { flex: 1; }
+.task-name  { font-weight: 700; font-size: 1.05rem; letter-spacing: 0.5px; }
+.task-loc   { font-size: 0.8rem; color: #888; }
+.task-check { font-size: 1.2rem; }
+
+.task-view-panel {
+  background: var(--panel);
+  border: 2px solid #222244;
+  border-radius: 16px;
+  padding: 28px;
+  width: 420px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
+}
+.task-view-panel .placeholder { text-align: center; color: #444; }
+.task-view-panel .placeholder svg { width: 80px; height: 80px; opacity: 0.3; margin-bottom: 16px; }
+.task-view-panel .placeholder p   { font-family: 'Press Start 2P', monospace; font-size: 0.55rem; line-height: 1.8; }
+
+/* ============================================================
+   TASK SCREEN
+   ============================================================ */
+#task-screen {
+  background: radial-gradient(ellipse at 50% 50%, #0a1a0a 0%, #040408 80%);
+  padding: 20px;
+}
+.task-frame {
+  background: var(--panel);
+  border: 2px solid var(--teal-dim);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 700px;
+  padding: 30px;
+  box-shadow: 0 0 40px #00d4aa22;
+  z-index: 10;
+}
+.task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #222244;
+}
+.task-header h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  color: var(--teal);
+  letter-spacing: 1px;
+}
+.back-btn {
+  background: none;
+  border: 2px solid #333;
+  color: #888;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.back-btn:hover { color: var(--teal); border-color: var(--teal-dim); }
+.task-body { width: 100%; }
+
+/* ============================================================
+   TASK: FIX WIRING
+   ============================================================ */
+.wire-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  position: relative;
+  height: 280px;
+}
+.wire-side { display: flex; flex-direction: column; justify-content: space-around; height: 100%; }
+.wire-node {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 3px solid #555;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+  position: relative;
+  z-index: 5;
+}
+.wire-node:hover    { transform: scale(1.2); }
+.wire-node.connected { border-color: #fff; box-shadow: 0 0 10px #fff8; }
+.wire-node.selected  { box-shadow: 0 0 14px currentColor; transform: scale(1.25); }
+.wire-canvas {
+  position: absolute; left: 0; top: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 2;
+}
+.wire-hint {
+  text-align: center; color: #666;
+  margin-top: 16px;
+  font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
+}
+
+/* ============================================================
+   TASK: SWIPE CARD
+   ============================================================ */
+.swipe-area {
+  background: #0a0a1a;
+  border: 2px solid #333;
+  border-radius: 12px;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  cursor: ew-resize;
+  user-select: none;
+}
+.card-reader-slot {
+  position: absolute; left: 20px; top: 50%;
+  transform: translateY(-50%);
+  width: 50px; height: 140px;
+  background: #111; border: 2px solid #444; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-reader-slot::after {
+  content: ''; width: 6px; height: 100px;
+  background: #222; border-radius: 3px;
+}
+.id-card {
+  position: absolute; top: 50%; left: 20px;
+  transform: translateY(-50%);
+  width: 100px; height: 60px;
+  background: linear-gradient(135deg, #1a3a1a, #2a5a2a);
+  border: 2px solid #4a4; border-radius: 8px;
+  cursor: ew-resize; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 4px; transition: filter 0.1s;
+}
+.id-card .card-stripe { width: 80%; height: 12px; background: #1a1a1a; border-radius: 2px; }
+.id-card .card-text   { font-size: 0.4rem; color: #8f8; font-family: 'Press Start 2P', monospace; }
+.swipe-feedback {
+  text-align: center; margin-top: 16px;
+  font-family: 'Press Start 2P', monospace; font-size: 0.55rem; min-height: 24px;
+}
+.swipe-feedback.good { color: var(--teal); }
+.swipe-feedback.bad  { color: var(--red); }
+.swipe-track {
+  position: absolute; right: 20px; top: 50%;
+  transform: translateY(-50%);
+  width: 10px; height: 140px;
+  background: #111; border: 1px solid #333; border-radius: 5px; overflow: hidden;
+}
+.swipe-track-fill {
+  width: 100%; background: var(--teal);
+  position: absolute; bottom: 0; border-radius: 5px;
+  transition: height 0.05s; box-shadow: 0 0 6px var(--teal);
+}
+
+/* ============================================================
+   TASK: DOWNLOAD DATA
+   ============================================================ */
+.download-container { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.download-terminal {
+  background: #050505; border: 2px solid #1a4a1a; border-radius: 10px;
+  width: 100%; padding: 20px;
+  font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
+  color: #0f0; line-height: 2; min-height: 140px;
+}
+.download-bar-wrap {
+  width: 100%; background: #111; border: 2px solid #333;
+  border-radius: 8px; height: 28px; overflow: hidden;
+}
+.download-bar-inner {
+  height: 100%; background: linear-gradient(90deg, #0a3a0a, #0f0);
+  width: 0%; transition: width 0.3s; position: relative;
+}
+.download-bar-inner::after {
+  content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+  width: 4px; background: #0f0; box-shadow: 0 0 8px #0f0;
+}
+.download-pct { font-family: 'Press Start 2P', monospace; font-size: 0.65rem; color: #0f0; }
+
+/* ============================================================
+   TASK: FUEL ENGINES
+   ============================================================ */
+.fuel-container { display: flex; gap: 30px; justify-content: center; align-items: flex-end; }
+.fuel-tank      { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.fuel-tank label { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #aaa; }
+.fuel-visual {
+  width: 60px; height: 180px; background: #111;
+  border: 2px solid #444; border-radius: 8px 8px 2px 2px;
+  position: relative; overflow: hidden;
+}
+.fuel-fill {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(0deg, #ff6a00, #ffb347);
+  transition: height 0.15s; box-shadow: 0 0 10px #ff6a0088;
+}
+.fuel-marks {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 4px 0; pointer-events: none;
+}
+.fuel-mark { height: 1px; background: #333; width: 60%; margin: 0 auto; }
+.fuel-btn {
+  background: #1a1a2e; border: 2px solid #444; color: white;
+  border-radius: 8px; padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
+  cursor: pointer; transition: background 0.1s, border-color 0.1s;
+}
+.fuel-btn:hover:not(:disabled) { background: #2a2a4e; border-color: #ff6a00; }
+.fuel-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.fuel-arrow { font-size: 1.5rem; color: #555; align-self: center; }
+
+/* ============================================================
+   TASK: ALIGN ENGINE
+   ============================================================ */
+.align-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.align-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.align-row  { display: flex; align-items: center; gap: 14px; }
+.align-label { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #aaa; width: 30px; text-align: right; }
+.align-slider { flex: 1; height: 8px; appearance: none; background: #222; border-radius: 4px; outline: none; cursor: pointer; }
+.align-slider::-webkit-slider-thumb {
+  appearance: none; width: 22px; height: 22px;
+  background: var(--teal); border-radius: 50%;
+  box-shadow: 0 0 8px var(--teal); cursor: pointer; border: 2px solid #fff;
+}
+.align-target { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #555; width: 30px; }
+.align-indicator { width: 14px; height: 14px; border-radius: 50%; background: #333; transition: background 0.2s, box-shadow 0.2s; flex-shrink: 0; }
+.align-indicator.ok { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+
+/* ============================================================
+   TASK: REACTOR
+   ============================================================ */
+.reactor-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.reactor-display {
+  background: #0a0a0a; border: 3px solid #444; border-radius: 12px;
+  width: 220px; height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.reactor-glow {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, #ff6600 0%, #cc2200 60%, transparent 100%);
+  animation: reactorPulse 2s infinite; box-shadow: 0 0 40px #ff660088;
+}
+@keyframes reactorPulse {
+  0%,100% { transform: scale(1); opacity: 0.9; }
+  50%     { transform: scale(1.1); opacity: 1; }
+}
+.reactor-sequence { display: flex; gap: 12px; }
+.reactor-btn {
+  width: 60px; height: 60px; border-radius: 50%; border: 3px solid #555;
+  cursor: pointer; font-family: 'Press Start 2P', monospace; font-size: 0.7rem;
+  color: white; transition: transform 0.1s, box-shadow 0.1s;
+  display: flex; align-items: center; justify-content: center;
+}
+.reactor-btn:hover  { transform: scale(1.1); }
+.reactor-btn:active { transform: scale(0.95); }
+.reactor-btn.flash  { animation: btnFlash 0.2s; }
+@keyframes btnFlash { 0%,100% { filter: brightness(1); } 50% { filter: brightness(2.5); } }
+.reactor-instructions { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #888; text-align: center; line-height: 2; }
+
+/* ============================================================
+   TASK: ASTEROIDS
+   ============================================================ */
+#asteroids-canvas {
+  border: 2px solid #333; border-radius: 10px;
+  background: #050510; display: block; cursor: crosshair;
+}
+.asteroids-ui { display: flex; justify-content: space-between; width: 100%; margin-top: 10px; }
+.asteroids-ui span { font-family: 'Press Start 2P', monospace; font-size: 0.55rem; color: var(--teal); }
+
+/* ============================================================
+   TASK: ADMIN MAP
+   ============================================================ */
+.admin-map { background: #050510; border: 2px solid #333; border-radius: 10px; padding: 20px; }
+.admin-rooms {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr); gap: 6px;
+  width: 360px; height: 220px; margin: 0 auto;
+}
+.admin-room {
+  background: #1a1a2e; border: 1px solid #333; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.4rem; font-family: 'Press Start 2P', monospace; color: #555;
+  position: relative; cursor: pointer; transition: background 0.2s;
+}
+.admin-room:hover      { background: #222244; }
+.admin-room.has-player { background: #1a2a1a; border-color: var(--teal-dim); color: var(--teal); }
+.admin-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; top: 4px; right: 4px; box-shadow: 0 0 6px currentColor; }
+.admin-instructions { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #888; margin-top: 14px; text-align: center; line-height: 2; }
+
+/* ============================================================
+   TASK: ID CODE
+   ============================================================ */
+.idcode-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.idcode-display {
+  background: #050505; border: 2px solid #333; border-radius: 8px;
+  padding: 18px 30px; font-family: 'Press Start 2P', monospace;
+  font-size: 1.6rem; color: #0f0; letter-spacing: 10px;
+  text-shadow: 0 0 10px #0f0; min-width: 240px; text-align: center;
+}
+.idcode-target { font-family: 'Press Start 2P', monospace; font-size: 0.55rem; color: #555; letter-spacing: 3px; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 220px; }
+.numpad-btn {
+  background: #111122; border: 2px solid #333; color: var(--white);
+  border-radius: 8px; padding: 14px;
+  font-family: 'Press Start 2P', monospace; font-size: 0.8rem;
+  cursor: pointer; transition: background 0.1s, border-color 0.1s; text-align: center;
+}
+.numpad-btn:hover  { background: #222244; border-color: var(--teal-dim); }
+.numpad-btn:active { background: #1a3a1a; }
+.numpad-btn.del-btn       { color: var(--red); border-color: #442222; }
+.numpad-btn.del-btn:hover { border-color: var(--red); }
+
+/* ============================================================
+   TASK: GARBAGE
+   ============================================================ */
+.garbage-container { display: flex; justify-content: center; gap: 30px; }
+.garbage-chute     { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.garbage-chute label { font-family: 'Press Start 2P', monospace; font-size: 0.45rem; color: #aaa; }
+.chute-visual { width: 80px; height: 160px; background: #111; border: 2px solid #444; border-radius: 4px; position: relative; overflow: hidden; cursor: pointer; }
+.chute-fill {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(0deg, #3a2a0a, #7a5a1a);
+  transition: height 0.2s;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 4px; color: #aaa; font-size: 0.8rem;
+}
+.chute-btn {
+  background: #1a1a2e; border: 2px solid #444; color: white;
+  border-radius: 6px; padding: 8px 12px;
+  font-family: 'Press Start 2P', monospace; font-size: 0.4rem; cursor: pointer;
+}
+.chute-btn:hover { background: #2a2a4e; border-color: var(--yellow); color: var(--yellow); }
+
+/* ============================================================
+   TASK: SCAN
+   ============================================================ */
+.scan-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.scan-booth {
+  width: 180px; height: 240px; border: 3px solid #444; border-radius: 16px;
+  background: #0a0a1a; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  box-shadow: 0 0 14px var(--teal);
+  animation: scanMove 2s linear infinite paused; top: 0;
+}
+.scan-line.active { animation-play-state: running; }
+@keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
+.scan-person { font-size: 4rem; z-index: 2; }
+
+/* ============================================================
+   TASK: CLEAR ASTEROIDS
+   ============================================================ */
+.clear-aster-container { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.aster-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 300px; }
+.aster-cell {
+  width: 50px; height: 50px; border-radius: 10px;
+  background: #111; border: 2px solid #333;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; cursor: pointer; transition: transform 0.1s, background 0.1s;
+}
+.aster-cell:hover { transform: scale(1.1); background: #1a1a2e; }
+.aster-cell.cleared {
+  background: #0a1a0a; border-color: var(--teal-dim);
+  font-size: 0.4rem; color: var(--teal); cursor: default;
+}
+.aster-cell.cleared:hover { transform: none; }
+
+/* ============================================================
+   SUCCESS FLASH
+   ============================================================ */
+.task-success-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,212,170,0.12);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; animation: flashIn 0.3s ease; pointer-events: none;
+}
+@keyframes flashIn { from { opacity: 0; } to { opacity: 1; } }
+.success-label {
+  font-family: 'Press Start 2P', monospace; font-size: 1.4rem;
+  color: var(--teal); text-shadow: var(--glow);
+  animation: bounceIn 0.4s cubic-bezier(.36,.07,.19,.97);
+}
+@keyframes bounceIn { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+
+/* ============================================================
+   VICTORY SCREEN
+   ============================================================ */
+#victory-screen { background: #000; overflow: hidden; }
+.victory-bg {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 50% 65%, #003333 0%, #001a1a 40%, #000 80%);
+}
+.victory-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(2rem, 8vw, 4rem); color: #4488ff;
+  text-shadow: 0 0 20px #4488ff, 0 0 50px #2255cc, 3px 3px 0 #0022aa;
+  z-index: 10; letter-spacing: 4px; margin-bottom: 40px;
+  animation: victoryPop 0.6s cubic-bezier(.36,.07,.19,.97) 0.2s both;
+}
+@keyframes victoryPop { 0% { transform: scale(0.3) translateY(-40px); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.victory-crewmate { z-index: 10; animation: victoryFloat 3s ease-in-out infinite; animation-delay: 0.6s; }
+@keyframes victoryFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+.victory-name {
+  font-family: 'Press Start 2P', monospace; font-size: 0.75rem;
+  color: #ccc; z-index: 10; margin-top: 16px; letter-spacing: 1px;
+  animation: fadeUp 0.5s ease 1s both;
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.victory-stars    { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2; pointer-events: none; }
+.victory-particles { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 8; pointer-events: none; }
+.confetti-piece   { position: absolute; width: 10px; height: 10px; animation: confettiFall linear infinite; }
+@keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.victory-play-again { z-index: 10; margin-top: 30px; width: auto; padding: 14px 30px; animation: fadeUp 0.5s ease 1.5s both; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 780px) {
+  .home-body       { flex-direction: column; padding: 16px; }
+  .task-view-panel { width: 100%; min-height: 300px; }
+  .home-header     { padding: 16px; }
+}

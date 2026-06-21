@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Among Us - Task Simulator</title>
+  <link rel="stylesheet" href="among-us-style.css">
+</head>
+<body>
+
+  <!-- ==================== SETUP SCREEN ==================== -->
+  <div id="setup-screen" class="screen active">
+    <div class="setup-bg-wrap">
+      <canvas id="setup-bg-canvas"></canvas>
+    </div>
+    <div class="setup-card">
+      <h1>AMONG US</h1>
+      <p class="subtitle">TASK SIMULATOR</p>
+
+      <div class="form-group">
+        <label>YOUR NAME</label>
+        <input type="text" id="player-name" placeholder="Enter crewmate name..." maxlength="20">
+      </div>
+
+      <div class="form-group">
+        <label>CHOOSE COLOR</label>
+        <div class="color-grid" id="color-grid"></div>
+      </div>
+
+      <button class="btn-main" onclick="startGame()">&#9654; START TASKS</button>
+    </div>
+  </div>
+
+  <!-- ==================== HOME SCREEN ==================== -->
+  <div id="home-screen" class="screen">
+    <div id="floating-bg"></div>
+
+    <div class="home-header">
+      <div class="home-title">TASKS</div>
+      <div class="player-badge">
+        <div id="header-mate"></div>
+        <span id="header-name">Crewmate</span>
+      </div>
+    </div>
+
+    <div class="home-body">
+      <div class="task-list-panel">
+        <h2>TASK LIST</h2>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+        </div>
+        <div id="task-list"></div>
+      </div>
+
+      <div class="task-view-panel" id="task-preview-panel">
+        <div class="placeholder">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="40" r="38" stroke="#333" stroke-width="2"/>
+            <path d="M24 52 L24 32 Q24 20 40 20 Q56 20 56 32 L56 52 Z" fill="#222"/>
+            <rect x="28" y="24" width="24" height="14" rx="7" fill="#111"/>
+          </svg>
+          <p>SELECT A TASK<br>TO BEGIN</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TASK SCREEN ==================== -->
+  <div id="task-screen" class="screen">
+    <div class="task-frame">
+      <div class="task-header">
+        <h2 id="task-title">TASK NAME</h2>
+        <button class="back-btn" onclick="goHome()">&#8592; BACK</button>
+      </div>
+      <div class="task-body" id="task-body"></div>
+    </div>
+  </div>
+
+  <!-- ==================== VICTORY SCREEN ==================== -->
+  <div id="victory-screen" class="screen">
+    <div class="victory-bg"></div>
+    <canvas class="victory-stars" id="victory-stars"></canvas>
+    <div class="victory-particles" id="victory-particles"></div>
+    <div class="victory-title pixel">Victory</div>
+    <div class="victory-crewmate" id="victory-mate"></div>
+    <div class="victory-name pixel" id="victory-name"></div>
+    <button class="btn-main victory-play-again" onclick="resetGame()">PLAY AGAIN</button>
+  </div>
+
+  <script src="among-us-game.js"></script>
+</body>
+</html>
